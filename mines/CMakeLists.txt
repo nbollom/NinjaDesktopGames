@@ -15,6 +15,12 @@ set(SOURCES
         cell.hpp
 )
 
+if(WIN32)
+    set(extra_compile_options -Wall)
+else ()
+    set(extra_compile_options -Wall -Wextra -Wpedantic -Wnull-dereference -Wcast-align -Wnon-virtual-dtor)
+endif()
+
 add_executable(mines ${SOURCES})
 target_link_libraries(mines common)
-target_compile_options(mines PRIVATE -Wall -Wextra -Wpedantic -Wnull-dereference -Wcast-align -Wnon-virtual-dtor -Wno-unused-parameter)
+target_compile_options(mines PRIVATE ${extra_compile_options})
