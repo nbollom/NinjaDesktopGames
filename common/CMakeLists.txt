@@ -19,9 +19,9 @@ set(SOURCES
     toolbar_button.hpp
     clickable.hpp
     clickable.cpp
-        menu.cpp
-        menu.hpp
-        key_binding.hpp
+    menu.cpp
+    menu.hpp
+    key_binding.hpp
 )
 
 find_package(OpenGL 3.2 REQUIRED)
@@ -38,16 +38,16 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-        GLEW
-        GIT_REPOSITORY https://github.com/nigels-com/glew.git
-        GIT_TAG glew-2.2.0
-        FIND_PACKAGE_ARGS 2.2.0 REQUIRED
+    GLEW
+    GIT_REPOSITORY https://github.com/nigels-com/glew.git
+    GIT_TAG glew-2.2.0
+    FIND_PACKAGE_ARGS 2.2.0
 )
 
 set(nano_patch_command ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/nanovg.cmake CMakelists.txt)
 FetchContent_Declare(
-        nanovg
-        GIT_REPOSITORY https://github.com/memononen/nanovg.git
+    nanovg
+    GIT_REPOSITORY https://github.com/memononen/nanovg.git
 )
 
 FetchContent_MakeAvailable(glfw GLEW)
