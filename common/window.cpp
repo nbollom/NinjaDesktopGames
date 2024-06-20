@@ -10,7 +10,6 @@
 #include <nanovg.h>
 #define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
-#include <nanovg_gl_utils.h>
 #pragma GCC diagnostic pop
 #include "window.hpp"
 #include "common.hpp"
@@ -23,6 +22,9 @@ Window::Window(const char* name, int width, int height) : _width(width), _height
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -59,7 +61,7 @@ Window::Window(const char* name, int width, int height) : _width(width), _height
 
     initialise_glew();
 
-    _context = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+    _context = nvgCreateGL3(NVG_STENCIL_STROKES);
     nvgCreateFont(_context, "sans", "/usr/share/fonts/TTF/DejaVuSans.ttf");
 
     Resize(_width, _height);

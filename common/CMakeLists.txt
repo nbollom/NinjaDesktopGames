@@ -36,19 +36,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
-# ImGui requires us to use a custom CMakeLists.txt file so process separately
-#FetchContent_Declare(
-#        imgui
-#        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-#        GIT_TAG v1.90.2
-#)
-#FetchContent_GetProperties(imgui)
-#if(NOT imgui_POPULATED)
-#    FetchContent_Populate(imgui)
-#    file(COPY_FILE imgui.cmake ${imgui_SOURCE_DIR}/CMakeLists.txt ONLY_IF_DIFFERENT)
-#    add_subdirectory(${imgui_SOURCE_DIR} ${imgui_BINARY_DIR})
-#endif()
-
 # Same with NanoVG
 FetchContent_Declare(
         nanovg
@@ -65,7 +52,6 @@ find_package(OpenGL 3.2 REQUIRED)
 find_package(GLEW 1.5.2 REQUIRED)
 
 add_library(common ${SOURCES})
-#target_link_libraries(common PUBLIC glfw imgui nanovg OpenGL::GL GLEW)
 target_link_libraries(common PUBLIC glfw nanovg OpenGL::GL GLEW)
 target_include_directories(common INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(common PRIVATE -Wall -Wextra -Wpedantic -Wnull-dereference -Wcast-align -Wnon-virtual-dtor)
