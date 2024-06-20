@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <GL/gl.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
@@ -59,7 +59,7 @@ Window::Window(const char* name, int width, int height) : _width(width), _height
     glfwMakeContextCurrent(_window);
     glfwSwapInterval(1);
 
-    initialise_glew();
+    initialise_gl3w();
 
     _context = nvgCreateGL3(NVG_STENCIL_STROKES);
     nvgCreateFont(_context, "sans", "/usr/share/fonts/TTF/DejaVuSans.ttf");

@@ -8,6 +8,6 @@ namespace ndg::common {
 
     void initialise_glfw();
 
-    void initialise_glew();
+    void initialise_gl3w();
 
 }

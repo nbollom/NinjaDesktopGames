@@ -4,7 +4,7 @@
 
 #include "common.hpp"
 
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "common.hpp"
@@ -27,20 +27,17 @@ void ndg::common::initialise_glfw() {
     glfw_initialised = true;
 }
 
-bool glew_initialised = false;
+bool gl3w_initialised = false;
 
-void ndg::common::initialise_glew() {
-    if (glew_initialised) {
+void ndg::common::initialise_gl3w() {
+    if (gl3w_initialised) {
         return;
     }
 
-    GLenum err = glewInit();
-
-    if (err != GLEW_OK) {
+    if (gl3wInit() || !gl3wIsSupported(3, 2)) {
         std::cout << "ERROR: Failed to initialised GLEW\n";
-        std::cout << glewGetErrorString(err) << "\n";
         exit(EXIT_FAILURE);
     }
 
-    glew_initialised = true;
+    gl3w_initialised = true;
 }
