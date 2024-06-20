@@ -9,7 +9,7 @@ on:
 jobs:
   build-linux-clang:
     name: Linux (clang)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Add universe repository
@@ -30,7 +30,7 @@ jobs:
 
   build-linux-gcc:
     name: Linux (gcc)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Add universe repository
