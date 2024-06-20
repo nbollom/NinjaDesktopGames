@@ -4,6 +4,7 @@
 
 #pragma once
 #include <functional>
+#include <utility>
 
 namespace ndg::common {
 
@@ -12,6 +13,10 @@ namespace ndg::common {
         int action;
         int mods;
         std::function<void()> callback;
+
+        explicit KeyBinding(int key, int action, int mods, std::function<void()> callback) : key(key), action(action), mods(mods), callback(std::move(callback)) {
+
+        }
     };
 
 }
