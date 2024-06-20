@@ -1,2 +1,5 @@
 # NinjaDesktopGames
 A collection of simple games for the desktop
+
+### CI:
+[![Linux (clang)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_linux_clang.yml/badge.svg)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_linux_clang.yml) [![Linux (gcc)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_linux_gcc.yml/badge.svg)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_linux_gcc.yml) [![Windows](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_windows.yml) [![Mac](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_mac.yml/badge.svg)](https://github.com/nbollom/NinjaDesktopGames/actions/workflows/cmake_mac.yml)
