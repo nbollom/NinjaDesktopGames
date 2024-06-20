@@ -4,7 +4,11 @@
 
 #include <iostream>
 #include <GL/gl3w.h>
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #include <nanovg.h>
