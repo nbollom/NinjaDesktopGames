@@ -1,0 +1,9 @@
+//
+// Created by nbollom on 29/06/24.
+//
+
+#include "resources.hpp"
+
+std::vector<unsigned char> embedded_font = {
+@embedded_font_data@
+};

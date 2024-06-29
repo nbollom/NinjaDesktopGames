@@ -22,7 +22,13 @@ set(SOURCES
     menu.cpp
     menu.hpp
     key_binding.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
+    resources.hpp
 )
+
+file(READ DejaVuSans.ttf embedded_font_data HEX)
+string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," embedded_font_data ${embedded_font_data})
+configure_file(resources.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp @ONLY)
 
 find_package(OpenGL 3.2 REQUIRED)
 
@@ -65,5 +71,5 @@ endif()
 
 add_library(common ${SOURCES})
 target_link_libraries(common PUBLIC glfw nanovg OpenGL::GL gl3w)
-target_include_directories(common INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(common PRIVATE ${extra_compile_options})

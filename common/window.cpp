@@ -18,6 +18,7 @@
 #include "window.hpp"
 #include "common.hpp"
 #include "clickable.hpp"
+#include "resources.hpp"
 
 using namespace ndg::common;
 
@@ -66,7 +67,7 @@ Window::Window(const char* name, int width, int height) : _width(width), _height
     initialise_gl3w();
 
     _context = nvgCreateGL3(NVG_STENCIL_STROKES);
-    nvgCreateFont(_context, "sans", "/usr/share/fonts/TTF/DejaVuSans.ttf");
+    nvgCreateFontMem(_context, "sans", embedded_font.data(), embedded_font.size(), 0);
 
     Resize(_width, _height);
 }

@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -B mac_build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B mac_build -DCMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++ -DCMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build mac_build --parallel
