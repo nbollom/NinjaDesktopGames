@@ -10,13 +10,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clang17
-        run: brew install llvm@17
-      - name: Set Environment Variables
-        run: |
-          echo "LDFLAGS=-L/opt/homebrew/opt/llvm@17/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm@17/lib/c++ -L/opt/homebrew/opt/llvm@17/lib" >> "$GITHUB_ENV"
-          echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@17/include" >> "$GITHUB_ENV"
+      - name: Install latest LLVM
+        run: brew install llvm
       - name: Configure
-        run: cmake -B mac_build -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@17/bin/clang++ -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@17/bin/clang -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B mac_build -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++ -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang -DCMAKE_BUILD_TYPE=Release
       - name: Build
-        run: cmake --build mac_build --parallel
+        run: LDFLAGS="-L$HOMEBREW_PREFIX/opt/llvm/lib/c++ -Wl,-rpath,$HOMEBREW_PREFIX/opt/llvm/lib/c++" cmake --build mac_build --parallel
