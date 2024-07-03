@@ -8,7 +8,7 @@
 #include <iostream>
 
 #ifdef __cpp_lib_ranges_enumerate
-constexpr auto enumerate = std::ranges:views:enumerate
+constexpr auto enumerate = std::ranges::views::enumerate;
 #else
 template <std::ranges::viewable_range R>
 constexpr auto enumerate(R&& r) {
