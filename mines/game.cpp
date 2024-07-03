@@ -38,7 +38,7 @@ Game::Game(int width, int height, int mines) : _width(width), _height(height), _
     }
 
     // Calculate numbers of neighbouring mines
-    for (auto [index, cell]: std::ranges::views::enumerate(_cells)) {
+    for (auto [index, cell]: enumerate(_cells)) {
         // Ignore mines
         if (cell.is_mine) {
             continue;
@@ -124,7 +124,7 @@ void Game::HandleMouseClick(int button, int action, int mods, float x, float y) 
         return;
     }
     
-    for (auto [index, cell]: std::ranges::views::enumerate(_cells)) {
+    for (auto [index, cell]: enumerate(_cells)) {
         auto [x1, x2, y1, y2] = cell.last_pos;
         if (x1 <= x && x2 >= x && y1 <= y && y2 >= y) {
             if (button == GLFW_MOUSE_BUTTON_LEFT) {
