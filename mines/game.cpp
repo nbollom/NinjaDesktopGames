@@ -7,6 +7,15 @@
 #include <ranges>
 #include <iostream>
 
+#ifdef __cpp_lib_ranges_enumerate
+constexpr auto enumerate = std::ranges:views:enumerate
+#else
+template <std::ranges::viewable_range R>
+constexpr auto enumerate(R&& r) {
+    return std::views::zip(std::views::iota(0), (R&&)r);
+}
+#endif
+
 using namespace ndg::mines;
 
 Game::Game(int width, int height, int mines) : _width(width), _height(height), _mines(mines), _state(InProgress) {
@@ -20,7 +29,7 @@ Game::Game(int width, int height, int mines) : _width(width), _height(height), _
     std::mt19937 gen(rd());
     std::uniform_int_distribution dist(0, cell_count);
     int mine_count = 0;
-    while (mine_count < mines) {
+    while (mine_count < _mines) {
         auto val = dist(gen);
         if (!_cells[val].is_mine) {
             _cells[val].is_mine = true;
@@ -29,12 +38,7 @@ Game::Game(int width, int height, int mines) : _width(width), _height(height), _
     }
 
     // Calculate numbers of neighbouring mines
-#ifdef __cpp_lib_ranges_enumerate
     for (auto [index, cell]: std::ranges::views::enumerate(_cells)) {
-#else
-    long index = 0;
-    for (auto cell: _cells) {
-#endif
         // Ignore mines
         if (cell.is_mine) {
             continue;
@@ -82,10 +86,6 @@ Game::Game(int width, int height, int mines) : _width(width), _height(height), _
         if (row < height - 1 && col < width - 1 && _cells[index + width + 1].is_mine) {
             cell.number++;
         }
-
-#ifndef __cpp_lib_ranges_enumerate
-        index++;
-#endif
     }
 }
 
@@ -123,12 +123,8 @@ void Game::HandleMouseClick(int button, int action, int mods, float x, float y) 
     if (action != GLFW_RELEASE || _state != InProgress) {
         return;
     }
-#ifdef __cpp_lib_ranges_enumerate
+    
     for (auto [index, cell]: std::ranges::views::enumerate(_cells)) {
-#else
-    long index = 0;
-    for (auto cell: _cells) {
-#endif
         auto [x1, x2, y1, y2] = cell.last_pos;
         if (x1 <= x && x2 >= x && y1 <= y && y2 >= y) {
             if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -160,9 +156,6 @@ void Game::HandleMouseClick(int button, int action, int mods, float x, float y) 
 
             break;
         }
-#ifndef __cpp_lib_ranges_enumerate
-        index++;
-#endif
     }
 }
 
