@@ -30,6 +30,9 @@ namespace ndg::mines {
         void HandleKeyEvent(int key, int scancode, int action, int mods) override;
         void HandleMouseClick(int button, int action, int mods, float x, float y) override;
 
+        std::string GetGameState();
+        std::string GetMinesCount();
+
     };
 
 }

@@ -5,14 +5,16 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(SOURCES
     main.cpp
-        state.cpp
-        state.hpp
-        game_scene.cpp
-        game_scene.hpp
-        game.cpp
-        game.hpp
-        cell.cpp
-        cell.hpp
+    state.cpp
+    state.hpp
+    game_scene.cpp
+    game_scene.hpp
+    game.cpp
+    game.hpp
+    cell.cpp
+    cell.hpp
+    main_window.cpp
+    main_window.hpp
 )
 
 if(WIN32)

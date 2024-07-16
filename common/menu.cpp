@@ -132,8 +132,8 @@ void Menu::HandleMouseClick(int button, int action, int mods, float x, float y) 
     }
 }
 
-void Menu::AddItem(ndg::common::MenuItem *item) {
-    _items.push_back(item);
+void Menu::AddItem(std::unique_ptr<MenuItem> item) {
+    _items.push_back(std::move(item));
     Height(static_cast<float>(_items.size()) * item_size);
     Width(0);
 }

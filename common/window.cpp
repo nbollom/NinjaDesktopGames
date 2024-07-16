@@ -75,11 +75,8 @@ Window::Window(const char* name, int width, int height) : _width(width), _height
 Window::~Window() {
     if (_window) {
         glfwDestroyWindow(_window);
+        _window = nullptr;
     }
-}
-
-void Window::AddToolbarItem(ToolbarItem *item)  {
-    _toolbar.AddItem(item);
 }
 
 bool Window::IsClosed() const {
@@ -96,6 +93,7 @@ void Window::Resize(int new_width, int new_height) {
     glViewport(0, 0, new_width, new_height);
 
     _toolbar.Width(static_cast<float>(_width));
+    _status_bar.Width(static_cast<float>(_width));
 
     std::cout << "Resized window: (" << new_width << "," << new_height << ")\n";
 }
@@ -157,6 +155,7 @@ void Window::Draw() {
 
     auto w = static_cast<float>(_width);
     auto h = static_cast<float>(_height);
+    auto game_height = h;
 
     nvgBeginFrame(_context, w, h, 1);
 
@@ -165,13 +164,20 @@ void Window::Draw() {
         float top = 0;
         if (_toolbar.Visible()) {
             top = _toolbar.Height();
-            h -= top;
+            game_height -= top;
         }
-        _scene->Draw(_context, 0, top, w, h, time);
+        if (_status_bar.HasItems()) {
+            game_height -= _status_bar.Height();
+        }
+        _scene->Draw(_context, 0, top, w, game_height, time);
     }
 
     if (_toolbar.Visible()) {
         _toolbar.Draw(_context, 0, 0);
+    }
+
+    if (_status_bar.HasItems()) {
+        _status_bar.Draw(_context, 0, h - _status_bar.Height());
     }
 
     if (_popup_menu) {

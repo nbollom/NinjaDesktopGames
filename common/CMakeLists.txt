@@ -24,6 +24,9 @@ set(SOURCES
     key_binding.hpp
     ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
     resources.hpp
+    cpp_compat.h
+    status_bar.cpp
+    status_bar.hpp
 )
 
 file(READ DejaVuSans.ttf embedded_font_data HEX)

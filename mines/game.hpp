@@ -22,17 +22,25 @@ namespace ndg::mines {
         int _width;
         int _height;
         int _mines;
-        GameState _state;
+        GameState _game_state;
+        State &_state;
+        bool _generated = false;
+        int _flagged = 0;
 
     public:
 
-        Game(int width, int height, int mines);
+        Game(int width, int height, int mines, State &state);
         void Draw(NVGcontext *context, float x, float y, float width, float height);
         void HandleMouseClick(int button, int action, int mods, float x, float y);
 
         static Game* New(State &state);
 
+        GameState GetGameState();
+        int GetMineCount();
+        int GetFlaggedCount();
+
     private:
+        void GenerateGrid(int clicked_index);
         int CountFlaggedNeighbours(int x, int y);
         void RevealCells(int x, int y);
         void CheckWin();

@@ -10,6 +10,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <memory>
 #include "drawable.hpp"
 #include "clickable.hpp"
 
@@ -41,13 +42,13 @@ namespace ndg::common {
 
     class Menu : public Drawable  {
     private:
-        std::vector<MenuItem*> _items;
+        std::vector<std::unique_ptr<MenuItem>> _items;
 
     public:
         void Draw(NVGcontext *context, float x, float y) override;
         void HandleMouseClick(int button, int action, int mods, float x, float y);
 
-        void AddItem(MenuItem *item);
+        void AddItem(std::unique_ptr<MenuItem> item);
     };
 
 }

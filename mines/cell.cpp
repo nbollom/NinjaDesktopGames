@@ -4,21 +4,23 @@
 
 #include "cell.hpp"
 #include <string>
+#include <colour.hpp>
 
 using namespace ndg::mines;
+using namespace ndg::common;
 
-void Cell::Draw(NVGcontext *context, float x, float y, float width, float height, bool finished) {
+void Cell::Draw(NVGcontext *context, float x, float y, float width, float height, bool finished, State &state) {
     nvgSave(context);
     nvgBeginPath(context);
     nvgRect(context, x, y, width, height);
     if (is_revealed) {
-        nvgFillColor(context, nvgRGB(255, 255, 255));
+        nvgFillColor(context, state.cell_bg_colour.ToNVGColor());
     }
     else {
-        nvgFillColor(context, nvgRGB(180, 150, 150));
+        nvgFillColor(context, state.cell_fg_colour.ToNVGColor());
     }
     nvgFill(context);
-    nvgStrokeColor(context, nvgRGB(0, 0, 0));
+    nvgStrokeColor(context, state.cell_border_colour.ToNVGColor());
     nvgStrokeWidth(context, 1);
     nvgStroke(context);
 
@@ -32,59 +34,55 @@ void Cell::Draw(NVGcontext *context, float x, float y, float width, float height
             NVGcolor color;
             switch (number) {
                 case 1:
-                    color = nvgRGB(105, 105, 105);
+                    color = state.cell_1_colour.ToNVGColor();
                     break;
                 case 2:
-                    color = nvgRGB(0, 0, 255);
+                    color = state.cell_2_colour.ToNVGColor();
                     break;
                 case 3:
-                    color = nvgRGB(0, 100, 0);
+                    color = state.cell_3_colour.ToNVGColor();
                     break;
                 case 4:
-                    color = nvgRGB(255, 0, 0);
+                    color = state.cell_4_colour.ToNVGColor();
                     break;
                 case 5:
-                    color = nvgRGB(0, 0, 139);
+                    color = state.cell_5_colour.ToNVGColor();
                     break;
                 case 6:
-                    color = nvgRGB(139, 0, 0);
+                    color = state.cell_6_colour.ToNVGColor();
                     break;
                 case 7:
-                    color = nvgRGB(0, 128, 128);
+                    color = state.cell_7_colour.ToNVGColor();
                     break;
                 case 8:
-                    color = nvgRGB(0, 0, 0);
-                    break;
-                case 9:
-                    color = nvgRGB(169, 169, 169);
+                    color = state.cell_8_colour.ToNVGColor();
                     break;
             }
             nvgFillColor(context, color);
             nvgText(context, width / 2 + x, height / 2 + y, number_str.c_str(), nullptr);
         }
         else if (is_mine) {
-            if (finished && is_flagged) {
-                nvgFillColor(context, nvgRGB(0, 100, 0));
-                nvgText(context, width / 2 + x, height / 2 + y, "\xe2\x9a\x91", nullptr);
+            if (is_exploded) {
+                nvgFillColor(context, state.mine_exploded_color.ToNVGColor());
             }
             else {
-                nvgFillColor(context, nvgRGB(0, 0, 0));
-                nvgText(context, width / 2 + x, height / 2 + y, "\xE2\x98\xA0", nullptr);
+                nvgFillColor(context, state.mine_colour.ToNVGColor());
             }
+            nvgText(context, width / 2 + x, height / 2 + y, "\xE2\x98\xA0", nullptr);
         }
     }
     else {
         if (is_flagged) {
             if (finished) {
                 if (is_mine) {
-                    nvgFillColor(context, nvgRGB(0, 100, 0));
+                    nvgFillColor(context, state.flag_good_colour.ToNVGColor());
                 }
                 else {
-                    nvgFillColor(context, nvgRGB(200, 0, 0));
+                    nvgFillColor(context, state.flag_bad_colour.ToNVGColor());
                 }
             }
             else {
-                nvgFillColor(context, nvgRGB(255, 255, 0));
+                nvgFillColor(context, state.flag_unknown_colour.ToNVGColor());
             }
             nvgText(context, width / 2 + x, height / 2 + y, "\xe2\x9a\x91", nullptr);
         }

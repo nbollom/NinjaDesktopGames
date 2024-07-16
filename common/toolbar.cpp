@@ -20,8 +20,8 @@ void Toolbar::Visible(bool value) {
     _visible = value;
 }
 
-void Toolbar::AddItem(ToolbarItem *item) {
-    _items.push_back(item);
+void Toolbar::AddItem(std::unique_ptr<ToolbarItem> item) {
+    _items.push_back(std::move(item));
 }
 
 void Toolbar::HandleMouseClick(int button, int action, int mods, float x, float y) {
@@ -30,7 +30,7 @@ void Toolbar::HandleMouseClick(int button, int action, int mods, float x, float 
         float pos = 0;
         for (auto &item: _items) {
             if (x >= pos && x <= pos + item->Width() && item->Clickable()) {
-                auto *toolbar_button = dynamic_cast<ToolbarButton*>(item);
+                auto *toolbar_button = dynamic_cast<ToolbarButton*>(item.get());
                 if (!down && toolbar_button->IsMouseDown()) {
                     toolbar_button->Click();
                 }
@@ -45,7 +45,7 @@ void Toolbar::HandleMouseClick(int button, int action, int mods, float x, float 
 void Toolbar::Draw(NVGcontext *context, float x, float y) {
     nvgSave(context);
     nvgBeginPath(context);
-    nvgRect(context, 0, 0, _width, 50);
+    nvgRect(context, x, y, _width, _height);
     nvgFillColor(context, nvgRGB(180, 150, 150));
     nvgFill(context);
     nvgStrokeColor(context, nvgRGB(0, 0, 0));

@@ -5,13 +5,13 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <string_view>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #include <nanovg.h>
 #pragma GCC diagnostic pop
 #include "colour.hpp"
 #include "toolbar.hpp"
+#include "status_bar.hpp"
 #include "scene.hpp"
 #include "menu.hpp"
 #include "key_binding.hpp"
@@ -25,18 +25,19 @@ namespace ndg::common {
         NVGcontext *_context;
         int _width;
         int _height;
-        Toolbar _toolbar;
         Menu *_popup_menu = nullptr;
         float _popup_menu_pos_x;
         float _popup_menu_pos_y;
         Scene *_scene = nullptr;
         std::vector<KeyBinding> _key_bindings;
 
+    protected:
+        Toolbar _toolbar;
+        StatusBar _status_bar;
+
     public:
         explicit Window(const char* name, int width, int height);
         virtual ~Window();
-
-        void AddToolbarItem(ToolbarItem *item);
 
         [[nodiscard]] bool IsClosed() const;
         void Close() const;

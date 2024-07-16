@@ -8,6 +8,7 @@
 #include <nanovg.h>
 #pragma GCC diagnostic pop
 #include <tuple>
+#include "state.hpp"
 
 namespace ndg::mines {
 
@@ -16,11 +17,12 @@ namespace ndg::mines {
         bool is_mine = false;
         bool is_revealed = false;
         bool is_flagged = false;
+        bool is_exploded = false;
         int number = 0;
 
         std::tuple<float, float, float, float> last_pos;
 
-        void Draw(NVGcontext *context, float x, float y, float width, float height, bool finished);
+        void Draw(NVGcontext *context, float x, float y, float width, float height, bool finished, State &state);
 
     };
 

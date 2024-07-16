@@ -3,6 +3,7 @@
 //
 
 #include "game_scene.hpp"
+#include <format>
 
 using namespace ndg::mines;
 
@@ -27,4 +28,20 @@ void GameScene::HandleMouseClick(int button, int action, int mods, float x, floa
     if (game) {
         game->HandleMouseClick(button, action, mods, x, y);
     }
+}
+
+std::string GameScene::GetGameState() {
+    switch(game->GetGameState()) {
+        case InProgress:
+            return "Playing";
+        case Won:
+            return "Game Won";
+        case Lost:
+            return "Game Lost";
+    }
+    return "";
+}
+
+std::string GameScene::GetMinesCount() {
+    return std::format("Found {} of {} mines", game->GetFlaggedCount(), game->GetMineCount());
 }

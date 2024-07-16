@@ -5,6 +5,10 @@
 #include "colour.hpp"
 using namespace ndg::common;
 
+constexpr unsigned char from_float(float val) {
+    return static_cast<unsigned char>(val * 255);
+}
+
 Colour::Colour(float red, float green, float blue, float alpha) {
     _data[0] = red;
     _data[1] = green;
@@ -30,6 +34,10 @@ float Colour::Alpha() const {
 
 float* Colour::GetDataRef() {
     return _data;
+}
+
+NVGcolor Colour::ToNVGColor() const {
+    return {.r=_data[0], .g=_data[1], .b=_data[2], .a=_data[3]};
 }
 
 void Colour::Red(float value) {

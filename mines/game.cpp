@@ -4,89 +4,14 @@
 
 #include "game.hpp"
 #include <random>
-#include <ranges>
 #include <iostream>
-
-#ifdef __cpp_lib_ranges_enumerate
-constexpr auto enumerate = std::ranges::views::enumerate;
-#else
-template <std::ranges::viewable_range R>
-constexpr auto enumerate(R&& r) {
-    return std::views::zip(std::views::iota(0), (R&&)r);
-}
-#endif
+#include <cpp_compat.h>
 
 using namespace ndg::mines;
 
-Game::Game(int width, int height, int mines) : _width(width), _height(height), _mines(mines), _state(InProgress) {
-    auto cell_count = width * height;
-
-    // Populate cells with blank values
-    _cells.resize(cell_count);
-
-    // Assign mines
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution dist(0, cell_count);
-    int mine_count = 0;
-    while (mine_count < _mines) {
-        auto val = dist(gen);
-        if (!_cells[val].is_mine) {
-            _cells[val].is_mine = true;
-            mine_count++;
-        }
-    }
-
-    // Calculate numbers of neighbouring mines
-    for (auto [index, cell]: enumerate(_cells)) {
-        // Ignore mines
-        if (cell.is_mine) {
-            continue;
-        }
-
-        auto row = index / width;
-        auto col = index % width;
-
-        // Top left
-        if (row > 0 && col > 0 && _cells[index - width - 1].is_mine) {
-            cell.number++;
-        }
-
-        // Top
-        if (row > 0 && _cells[index - width].is_mine) {
-            cell.number++;
-        }
-
-        // Top right
-        if (row > 0 && col < width - 1 && _cells[index - width + 1].is_mine) {
-            cell.number++;
-        }
-
-        // Left
-        if (col > 0 && _cells[index - 1].is_mine) {
-            cell.number++;
-        }
-
-        // Right
-        if (col < width - 1 && _cells[index + 1].is_mine) {
-            cell.number++;
-        }
-
-        // Bottom Left
-        if (row < height - 1 && col > 0 && _cells[index + width - 1].is_mine) {
-            cell.number++;
-        }
-
-        // Bottom
-        if (row < height - 1 && _cells[index + width].is_mine) {
-            cell.number++;
-        }
-
-        // Bottom Right
-        if (row < height - 1 && col < width - 1 && _cells[index + width + 1].is_mine) {
-            cell.number++;
-        }
-    }
+Game::Game(int width, int height, int mines, State &state) : _width(width), _height(height), _mines(mines), _game_state(InProgress), _state(state) {
+    // Populate cells with blank values (will generate mines and numbers after first click)
+    _cells.resize(width * height);
 }
 
 void Game::Draw(NVGcontext *context, float x, float y, float width, float height) {
@@ -98,7 +23,7 @@ void Game::Draw(NVGcontext *context, float x, float y, float width, float height
 
     for (int cell_y = 0; cell_y < _height; ++cell_y) {
         for (int cell_x = 0; cell_x < _width; ++cell_x) {
-            _cells[cell_y * _width + cell_x].Draw(context, start_x + cell_x * cell_size, start_y + cell_y * cell_size, cell_size, cell_size, _state != InProgress);
+            _cells[cell_y * _width + cell_x].Draw(context, start_x + cell_x * cell_size, start_y + cell_y * cell_size, cell_size, cell_size, _game_state != InProgress, _state);
         }
     }
 }
@@ -106,32 +31,36 @@ void Game::Draw(NVGcontext *context, float x, float y, float width, float height
 Game *Game::New(State &state) {
     switch (state.difficulty) {
         case Easy:
-            return new Game(10, 10, 10);
+            return new Game(10, 10, 10, state);
         case Medium:
-            return new Game(20, 10, 30);
+            return new Game(20, 10, 30, state);
         case Hard:
-            return new Game(30, 18, 100);
+            return new Game(30, 18, 100, state);
         case Impossible:
-            return new Game(60, 36, 540);
+            return new Game(60, 36, 540, state);
         case Custom:
-            return new Game(state.custom_width, state.custom_height, state.custom_mines);
+            return new Game(state.custom_width, state.custom_height, state.custom_mines, state);
     }
     return nullptr;
 }
 
-void Game::HandleMouseClick(int button, int action, int mods, float x, float y) {
-    if (action != GLFW_RELEASE || _state != InProgress) {
+void Game::HandleMouseClick(int button, int action, [[maybe_unused]] int mods, float x, float y) {
+    if (action != GLFW_RELEASE || _game_state != InProgress) {
         return;
     }
     
     for (auto [index, cell]: enumerate(_cells)) {
         auto [x1, x2, y1, y2] = cell.last_pos;
         if (x1 <= x && x2 >= x && y1 <= y && y2 >= y) {
+            if (!_generated) {
+                GenerateGrid(static_cast<int>(index));
+            }
             if (button == GLFW_MOUSE_BUTTON_LEFT) {
                 if (!cell.is_revealed && !cell.is_flagged) {
                     cell.is_revealed = true;
                     if (cell.is_mine) {
-                        _state = Lost;
+                        cell.is_exploded = true;
+                        _game_state = Lost;
                         RevealMines();
                     }
                     else {
@@ -151,12 +80,84 @@ void Game::HandleMouseClick(int button, int action, int mods, float x, float y) 
                 }
             }
             else if (button == GLFW_MOUSE_BUTTON_RIGHT && !cell.is_revealed) {
+                _flagged += cell.is_flagged ? -1 : 1;
                 cell.is_flagged = !cell.is_flagged;
             }
 
             break;
         }
     }
+}
+
+void Game::GenerateGrid(int clicked_index) {
+    // Assign mines
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution dist(0, _width * _height - 1);
+    int mine_count = 0;
+    while (mine_count < _mines) {
+        auto val = dist(gen);
+        if (val == clicked_index) {
+            continue;
+        }
+        if (!_cells[val].is_mine) {
+            _cells[val].is_mine = true;
+            mine_count++;
+        }
+    }
+
+    // Calculate numbers of neighbouring mines
+    for (auto [index, cell]: enumerate(_cells)) {
+        // Ignore mines
+        if (cell.is_mine) {
+            continue;
+        }
+
+        auto row = index / _width;
+        auto col = index % _width;
+
+        // Top left
+        if (row > 0 && col > 0 && _cells[index - _width - 1].is_mine) {
+            cell.number++;
+        }
+
+        // Top
+        if (row > 0 && _cells[index - _width].is_mine) {
+            cell.number++;
+        }
+
+        // Top right
+        if (row > 0 && col < _width - 1 && _cells[index - _width + 1].is_mine) {
+            cell.number++;
+        }
+
+        // Left
+        if (col > 0 && _cells[index - 1].is_mine) {
+            cell.number++;
+        }
+
+        // Right
+        if (col < _width - 1 && _cells[index + 1].is_mine) {
+            cell.number++;
+        }
+
+        // Bottom Left
+        if (row < _height - 1 && col > 0 && _cells[index + _width - 1].is_mine) {
+            cell.number++;
+        }
+
+        // Bottom
+        if (row < _height - 1 && _cells[index + _width].is_mine) {
+            cell.number++;
+        }
+
+        // Bottom Right
+        if (row < _height - 1 && col < _width - 1 && _cells[index + _width + 1].is_mine) {
+            cell.number++;
+        }
+    }
+
+    _generated = true;
 }
 
 int Game::CountFlaggedNeighbours(int x, int y) {
@@ -191,7 +192,8 @@ void Game::RevealCells(int x, int y) {
                 c.is_revealed = true;
 
                 if (c.is_mine) {
-                    _state = Lost;
+                    c.is_exploded = true;
+                    _game_state = Lost;
                     RevealMines();
                 }
 
@@ -209,7 +211,8 @@ void Game::CheckWin() {
         }
     }
     if (count == _width * _height) {
-        _state = Won;
+        _game_state = Won;
+        _flagged = _mines;
         for (auto &c: _cells) {
             if (c.is_mine) {
                 c.is_flagged = true;
@@ -224,4 +227,16 @@ void Game::RevealMines() {
             c.is_revealed = true;
         }
     }
+}
+
+GameState Game::GetGameState() {
+    return _game_state;
+}
+
+int Game::GetMineCount() {
+    return _mines;
+}
+
+int Game::GetFlaggedCount() {
+    return _flagged;
 }
