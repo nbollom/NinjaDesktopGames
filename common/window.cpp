@@ -90,7 +90,10 @@ void Window::Close() const {
 void Window::Resize(int new_width, int new_height) {
     _width = new_width;
     _height = new_height;
-    glViewport(0, 0, new_width, new_height);
+    
+    float xscale, yscale;
+    glfwGetWindowContentScale(_window, &xscale, &yscale);
+    glViewport(0, 0, new_width * xscale, new_height * yscale);
 
     _toolbar.Width(static_cast<float>(_width));
     _status_bar.Width(static_cast<float>(_width));
